@@ -1,0 +1,99 @@
+version: "3.8"
+
+services:
+  # Serviço Cloud Run (upstream)
+  lottery-caixa-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lottery-caixa-service
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - ENVIRONMENT=development
+      - DOWNSTREAM_SERVICE_URL=http://lottery-processor:8081/api/lottery/process
+      - CAIXA_BASE_URL=http://servicebus2.caixa.gov.br/portaldeloterias/api/
+      - CAIXA_RATE_LIMIT=2
+      - CAIXA_CACHE_TTL=5
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:8080/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    networks:
+      - lottery-network
+    depends_on:
+      - lottery-processor
+    restart: unless-stopped
+    volumes:
+      - .:/app
+
+  # Serviço downstream (processador)
+  lottery-processor:
+    image: golang:1.21-alpine
+    container_name: lottery-processor
+    working_dir: /app
+    command: go run ./examples/processor.go
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+    networks:
+      - lottery-network
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+  # Prometheus para coleta de métricas
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: lottery-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    networks:
+      - lottery-network
+    depends_on:
+      - lottery-caixa-service
+    restart: unless-stopped
+
+  # Grafana para visualização
+  grafana:
+    image: grafana/grafana:latest
+    container_name: lottery-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    networks:
+      - lottery-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  lottery-network:
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-storage:

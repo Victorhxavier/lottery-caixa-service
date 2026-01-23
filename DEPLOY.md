@@ -1,4 +1,4 @@
-# Deploy Guide - Lottery Caixa Service
+f# Deploy Guide - Lottery Caixa Service
 
 Guia completo para fazer deploy do serviço em diferentes ambientes.
 
@@ -34,10 +34,10 @@ docker build -t lottery-caixa-service:latest .
 
 # Tag para GCP
 docker tag lottery-caixa-service:latest \
-  gcr.io/seu-projeto-id/lottery-caixa-service:latest
+  gcr.io/mega-sena-79491/lottery-caixa-service:latest
 
 # Push para Container Registry
-docker push gcr.io/seu-projeto-id/lottery-caixa-service:latest
+docker push gcr.io/mega-sena-79491/lottery-caixa-service:latest
 ```
 
 ### 3. Deploy no Cloud Run

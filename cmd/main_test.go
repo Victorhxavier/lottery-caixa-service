@@ -114,7 +114,6 @@ func TestWebhookPayload(t *testing.T) {
 		t.Fatalf("Erro ao serializar webhook: %v", err)
 	}
 
-	w := httptest.NewRecorder()
 	req := httptest.NewRequest("POST", "/api/v1/lottery/webhook", bytes.NewBuffer(jsonData))
 
 	if req.Method != "POST" {

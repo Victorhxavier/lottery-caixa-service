@@ -4,15 +4,15 @@ import "time"
 
 // LotteryResult representa o resultado de um sorteio da loteria
 type LotteryResult struct {
-	ID            string    `json:"id"`
-	GameType      string    `json:"gameType"`
-	DrawNumber    int       `json:"drawNumber"`
-	DrawDate      string    `json:"drawDate"`
-	Numbers       []int     `json:"numbers"`
-	Winners       int       `json:"winners"`
-	Prize         float64   `json:"prize"`
-	ProcessedAt   time.Time `json:"processedAt"`
-	Source        string    `json:"source"`
+	ID          string    `json:"id"`
+	GameType    string    `json:"gameType"`
+	DrawNumber  int       `json:"drawNumber"`
+	DrawDate    string    `json:"drawDate"`
+	Numbers     []int     `json:"numbers"`
+	Winners     int       `json:"winners"`
+	Prize       float64   `json:"prize"`
+	ProcessedAt time.Time `json:"processedAt"`
+	Source      string    `json:"source"`
 }
 
 // DownstreamPayload é o payload enviado para o microserviço downstream
@@ -42,43 +42,42 @@ type WebhookPayload struct {
 
 // CaixaAPIResponse representa a resposta da API da Caixa
 type CaixaAPIResponse struct {
-	Acumulado                          bool     `json:"acumulado"`
-	DataApuracao                       string   `json:"dataApuracao"`
-	DataProximoConcurso                string   `json:"dataProximoConcurso"`
-	DezenasSorteadasOrdemSorteio       []string `json:"dezenasSorteadasOrdemSorteio"`
-	ExibirDetalhamentoPorCidade        bool     `json:"exibirDetalhamentoPorCidade"`
-	ID                                 *int     `json:"id"`
-	IndicadorConcursoEspecial          int      `json:"indicadorConcursoEspecial"`
-	ListaDezenas                       []string `json:"listaDezenas"`
-	ListaDezenasSegundoSorteio         []string `json:"listaDezenasSegundoSorteio"`
-	ListaMunicipioUFGanhadores         []string `json:"listaMunicipioUFGanhadores"`
-	ListaRateioPremio                  []struct {
-		DescricaoFaixa      string  `json:"descricaoFaixa"`
-		Faixa               int     `json:"faixa"`
-		NumeroDeGanhadores  int     `json:"numeroDeGanhadores"`
-		ValorPremio         float64 `json:"valorPremio"`
+	Acumulado                    bool     `json:"acumulado"`
+	DataApuracao                 string   `json:"dataApuracao"`
+	DataProximoConcurso          string   `json:"dataProximoConcurso"`
+	DezenasSorteadasOrdemSorteio []string `json:"dezenasSorteadasOrdemSorteio"`
+	ExibirDetalhamentoPorCidade  bool     `json:"exibirDetalhamentoPorCidade"`
+	ID                           *int     `json:"id"`
+	IndicadorConcursoEspecial    int      `json:"indicadorConcursoEspecial"`
+	ListaDezenas                 []string `json:"listaDezenas"`
+	ListaDezenasSegundoSorteio   []string `json:"listaDezenasSegundoSorteio"`
+	ListaRateioPremio            []struct {
+		DescricaoFaixa     string  `json:"descricaoFaixa"`
+		Faixa              int     `json:"faixa"`
+		NumeroDeGanhadores int     `json:"numeroDeGanhadores"`
+		ValorPremio        float64 `json:"valorPremio"`
 	} `json:"listaRateioPremio"`
-	ListaResultadoEquipeEsportiva      interface{} `json:"listaResultadoEquipeEsportiva"`
-	LocalSorteio                       string      `json:"localSorteio"`
-	NomeMunicipioUFSorteio             string      `json:"nomeMunicipioUFSorteio"`
-	NomeTimeCoracaoMesSorte            string      `json:"nomeTimeCoracaoMesSorte"`
-	Numero                             int         `json:"numero"`
-	NumeroConcursoAnterior             int         `json:"numeroConcursoAnterior"`
-	NumeroConcursoFinal05              int         `json:"numeroConcursoFinal_0_5"`
-	NumeroConcursoProximo              int         `json:"numeroConcursoProximo"`
-	NumeroJogo                         int         `json:"numeroJogo"`
-	Observacao                         string      `json:"observacao"`
-	PremiacaoContingencia              interface{} `json:"premiacaoContingencia"`
-	TipoJogo                           string      `json:"tipoJogo"`
-	TipoPublicacao                     int         `json:"tipoPublicacao"`
-	UltimoConcurso                     bool        `json:"ultimoConcurso"`
-	ValorArrecadado                    float64     `json:"valorArrecadado"`
-	ValorAcumuladoConcurso05           float64     `json:"valorAcumuladoConcurso_0_5"`
-	ValorAcumuladoConcursoEspecial     float64     `json:"valorAcumuladoConcursoEspecial"`
-	ValorAcumuladoProximoConcurso      float64     `json:"valorAcumuladoProximoConcurso"`
-	ValorEstimadoProximoConcurso       float64     `json:"valorEstimadoProximoConcurso"`
-	ValorSaldoReservaGarantidora       float64     `json:"valorSaldoReservaGarantidora"`
-	ValorTotalPremioFaixaUm            float64     `json:"valorTotalPremioFaixaUm"`
+	ListaResultadoEquipeEsportiva  interface{} `json:"listaResultadoEquipeEsportiva"`
+	LocalSorteio                   string      `json:"localSorteio"`
+	NomeMunicipioUFSorteio         string      `json:"nomeMunicipioUFSorteio"`
+	NomeTimeCoracaoMesSorte        string      `json:"nomeTimeCoracaoMesSorte"`
+	Numero                         int         `json:"numero"`
+	NumeroConcursoAnterior         int         `json:"numeroConcursoAnterior"`
+	NumeroConcursoFinal05          int         `json:"numeroConcursoFinal_0_5"`
+	NumeroConcursoProximo          int         `json:"numeroConcursoProximo"`
+	NumeroJogo                     int         `json:"numeroJogo"`
+	Observacao                     string      `json:"observacao"`
+	PremiacaoContingencia          interface{} `json:"premiacaoContingencia"`
+	TipoJogo                       string      `json:"tipoJogo"`
+	TipoPublicacao                 int         `json:"tipoPublicacao"`
+	UltimoConcurso                 bool        `json:"ultimoConcurso"`
+	ValorArrecadado                float64     `json:"valorArrecadado"`
+	ValorAcumuladoConcurso05       float64     `json:"valorAcumuladoConcurso_0_5"`
+	ValorAcumuladoConcursoEspecial float64     `json:"valorAcumuladoConcursoEspecial"`
+	ValorAcumuladoProximoConcurso  float64     `json:"valorAcumuladoProximoConcurso"`
+	ValorEstimadoProximoConcurso   float64     `json:"valorEstimadoProximoConcurso"`
+	ValorSaldoReservaGarantidora   float64     `json:"valorSaldoReservaGarantidora"`
+	ValorTotalPremioFaixaUm        float64     `json:"valorTotalPremioFaixaUm"`
 }
 
 // ServiceInfo contém informações do serviço

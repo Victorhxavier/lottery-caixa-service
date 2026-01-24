@@ -82,15 +82,18 @@ func NewLotteryService(cfg *config.Config) *LotteryService {
 }
 
 // FetchLotteryResults busca resultados da loteria com retry e retorna objeto da Caixa
-func (s *LotteryService) FetchLotteryResults(ctx context.Context, gameType string) (*domain.CaixaAPIResponse, error) {
+func (s *LotteryService) FetchLotteryResults(ctx context.Context, gameType string, concurso string) (*domain.CaixaAPIResponse, error) {
 	// Incrementar métrica
 	s.metrics.requestsTotal.Add(1)
 
 	// Verificar cache
 	cacheKey := gameType
+	if concurso != "" {
+		cacheKey = fmt.Sprintf("%s:%s", gameType, concurso)
+	}
 	if cached, exists := s.cache.Get(cacheKey); exists {
 		s.metrics.cacheHits.Add(1)
-		log.Printf("Cache hit para %s", gameType)
+		log.Printf("Cache hit para %s", cacheKey)
 		if result, ok := cached.(*domain.CaixaAPIResponse); ok {
 			return result, nil
 		}
@@ -104,11 +107,11 @@ func (s *LotteryService) FetchLotteryResults(ctx context.Context, gameType strin
 		if attempt > 0 {
 			backoff := time.Duration(math.Pow(2, float64(attempt))) *
 				time.Duration(s.cfg.Caixa.RetryBackoffMs) * time.Millisecond
-			log.Printf("Retry %d após %v para %s", attempt+1, backoff, gameType)
+			log.Printf("Retry %d após %v para %s", attempt+1, backoff, cacheKey)
 			time.Sleep(backoff)
 		}
 
-		result, err := s.fetchWithRateLimit(ctx, gameType)
+		result, err := s.fetchWithRateLimit(ctx, gameType, concurso)
 		if err == nil {
 			s.metrics.requestsSuccess.Add(1)
 			s.cache.Set(cacheKey, result)
@@ -125,7 +128,7 @@ func (s *LotteryService) FetchLotteryResults(ctx context.Context, gameType strin
 }
 
 // fetchWithRateLimit busca resultados respeitando rate limit
-func (s *LotteryService) fetchWithRateLimit(ctx context.Context, gameType string) (*domain.CaixaAPIResponse, error) {
+func (s *LotteryService) fetchWithRateLimit(ctx context.Context, gameType string, concurso string) (*domain.CaixaAPIResponse, error) {
 	start := time.Now()
 
 	// Aguardar rate limit
@@ -139,8 +142,14 @@ func (s *LotteryService) fetchWithRateLimit(ctx context.Context, gameType string
 		s.metrics.mu.Unlock()
 	}()
 
-	// API da Caixa sem número busca o último concurso
-	url := fmt.Sprintf("%s/%s", s.cfg.Caixa.BaseURL, gameType)
+	// Construir URL - se concurso for informado, adiciona à URL
+	var url string
+	if concurso != "" {
+		url = fmt.Sprintf("%s%s/%s", s.cfg.Caixa.BaseURL, gameType, concurso)
+	} else {
+		// API da Caixa sem número busca o último concurso
+		url = fmt.Sprintf("%s%s", s.cfg.Caixa.BaseURL, gameType)
+	}
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {

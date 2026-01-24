@@ -19,10 +19,12 @@ func GetLotteryResults(svc *service.LotteryService) http.HandlerFunc {
 			gameType = "lotofacil"
 		}
 
-		requestID := uuid.New().String()
-		log.Printf("[%s] Buscando resultados para: %s", requestID, gameType)
+		concurso := r.URL.Query().Get("concurso")
 
-		result, err := svc.FetchLotteryResults(r.Context(), gameType)
+		requestID := uuid.New().String()
+		log.Printf("[%s] Buscando resultados para: %s (concurso: %s)", requestID, gameType, concurso)
+
+		result, err := svc.FetchLotteryResults(r.Context(), gameType, concurso)
 		if err != nil {
 			log.Printf("[%s] Erro ao buscar resultados: %v", requestID, err)
 			respondError(w, http.StatusInternalServerError, "Erro ao buscar resultados", err, requestID)

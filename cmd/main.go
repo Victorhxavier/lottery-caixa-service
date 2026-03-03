@@ -30,6 +30,8 @@ func main() {
 	lotteryService := service.NewLotteryService(cfg)
 	defer lotteryService.Close()
 
+	handlers.StartVerifyScheduler()
+
 	// Criar roteador
 	mux := setupRouter(lotteryService)
 

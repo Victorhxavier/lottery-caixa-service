@@ -11,6 +11,26 @@ import (
 	"github.com/victor/lottery-caixa-service/internal/service"
 )
 
+func StartVerifyScheduler() {
+	ticker := time.NewTicker(2 * time.Hour)
+	go func() {
+		for range ticker.C {
+			callVerifyEndpoint()
+		}
+	}()
+	callVerifyEndpoint()
+}
+
+func callVerifyEndpoint() {
+	resp, err := http.Get("https://backend-loteria-xpn7.onrender.com/api/verify")
+	if err != nil {
+		log.Printf("Erro ao chamar /api/verify: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+	log.Printf("Chamada /api/verify status: %d", resp.StatusCode)
+}
+
 // GetLotteryResults retorna resultados de loteria diretamente da API da Caixa
 func GetLotteryResults(svc *service.LotteryService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
